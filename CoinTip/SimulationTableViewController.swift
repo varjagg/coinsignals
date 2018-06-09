@@ -10,6 +10,7 @@ import UIKit
 
 class SimulationTableViewController: UITableViewController {
 
+    var ledger: Ledger?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,13 +30,15 @@ class SimulationTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+        if ledger != nil {
+            return ledger!.entries.count
+        } else {
+            return 0
+        }
     }
 
     /*
@@ -86,7 +89,7 @@ class SimulationTableViewController: UITableViewController {
     
     // MARK: - Navigation
      @IBAction func dismissButton(_ sender: UIBarButtonItem) {
-     dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: nil)
      }
      
     /*
