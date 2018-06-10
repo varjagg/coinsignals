@@ -41,15 +41,39 @@ class SimulationTableViewController: UITableViewController {
         }
     }
 
-    /*
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
+        // Table view cells are reused and should be dequeued using a cell identifier.
+        let cellIdentifier = "TradesTableViewCell"
+     
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? TradesTableViewCell  else {
+        fatalError("The dequeued cell is not an instance of TradesTableViewCell.")
+        }
+     
+        // Fetches the appropriate meal for the data source layout.
+        let trade = ledger!.entries[indexPath.row]
+        
+        cell.dateTime.text = trade.datetime
+        
+        let btcFormatter = NumberFormatter()
+        btcFormatter.usesGroupingSeparator = true
+        btcFormatter.numberStyle = .decimal
+        btcFormatter.minimumFractionDigits = 3
+        btcFormatter.maximumFractionDigits = 8
+        
+        cell.amountBTC.text = btcFormatter.string(from: NSNumber(value: trade.amountBTC))
+        
+        let usdFormatter = NumberFormatter()
+        usdFormatter.usesGroupingSeparator = true
+        usdFormatter.numberStyle = .currency
+        usdFormatter.locale = Locale(identifier: "en_US")
+        
+        cell.amountUSD.text = usdFormatter.string(from: NSNumber(value: trade.amountUSD))
+        cell.rate.text = String(trade.pricePoint)
+        cell.backgroundColor = trade.salep ? .red : .blue
+        //cell.transactionImage.image = UIImage(imageLiteralResourceName: trade.salep ? "saleArrow" : "buyArrow")
 
         return cell
     }
-    */
 
     /*
     // Override to support conditional editing of the table view.

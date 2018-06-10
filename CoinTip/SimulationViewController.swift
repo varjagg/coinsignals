@@ -24,9 +24,12 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
     //MARK: properties
     @IBOutlet weak var periodStart: UIDatePicker!
     @IBOutlet weak var periodEnd: UIDatePicker!
-    @IBOutlet weak var startAmount: UITextField!
+    @IBOutlet weak var startAmount: UITextField! {
+        didSet { startAmount?.addDoneToolbar() }
+    }
     
     var preparedLedger: Ledger?
+    var signalsResponse: SignalsResponse?
     
     //MARK: actions
     @IBAction func runSimulation(_ sender: UIButton) {
@@ -36,15 +39,15 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(activityIndicator)
         activityIndicator.frame = view.bounds
         activityIndicator.startAnimating()
-        loadSignals()
+        prepareLedger()
         activityIndicator.stopAnimating()
         activityIndicator.removeFromSuperview()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-    startAmount.delegate = self
+        loadSignals()
+        startAmount.delegate = self
     }
 
     override func didReceiveMemoryWarning() {
@@ -54,6 +57,8 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
+        prepareLedger()
+        
         guard let tradeController = segue.destination as? SimulationTableViewController else {
             fatalError("Unexpected destination: \(segue.destination)")
         }
@@ -65,7 +70,7 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
         guard preparedLedger != nil else {
             fatalError("Missing ledger data")
         }
-        tradeController.ledger = preparedLedger!
+        tradeController.ledger = preparedLedger
         
     }
     
@@ -77,12 +82,89 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
         return true
     }
     
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool { // return false to not change text
+        // max 2 fractional digits allowed
+        let newText = (textField.text! as NSString).replacingCharacters(in: range, with: string)
+        let regex = try! NSRegularExpression(pattern: "\\..{8,}", options: [])
+        let matches = regex.matches(in: newText, options:[], range:NSMakeRange(0, newText.count))
+        guard matches.count == 0 else { return false }
+        
+        switch string {
+        case "0","1","2","3","4","5","6","7","8","9":
+            return true
+        case ".":
+            let array = textField.text?.map { String($0) }
+            var decimalCount = 0
+            for character in array! {
+                if character == "." {
+                    decimalCount += 1
+                }
+            }
+            if decimalCount == 1 {
+                return false
+            } else {
+                return true
+            }
+        default:
+            let array = string.map { String($0) }
+            if array.count == 0 {
+                return true
+            }
+            return false
+        }
+    }
+    
     //MARK: private
     
     private var simulationData: SimulationData = SimulationData()
     
     private func saveSimulationData() {
         simulationData.amount = 0
+    }
+    
+    private func prepareLedger() {
+        guard self.startAmount.text != nil else {
+            fatalError("No start amount specified.")
+        }
+        
+        guard let startAmount = Float(self.startAmount.text!) else {
+            fatalError("Could not parse the amount")
+        }
+        
+        let startTime = periodStart.date.timeIntervalSince1970
+        let endTime = periodEnd.date.timeIntervalSince1970
+        var btcAmount = startAmount
+        var usdAmount:Float = 0.0
+        
+        self.preparedLedger = Ledger(profitQuantifier: 1, entries: [LedgerEntry]())
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yy-MM-dd HH:mm"
+        
+        guard let signalsResponse  = signalsResponse else {
+            return
+        }
+        for entry in signalsResponse.entries.reversed() {
+            if entry.dts >= Int(startTime) && entry.dts <= Int(endTime) {
+                let dts = Date.init(timeIntervalSince1970: TimeInterval(entry.dts))
+                
+                //Sell BTC
+                if entry.type == "SELL" && btcAmount >= 0.001 {
+                    usdAmount = usdAmount + btcAmount * entry.price
+                    self.preparedLedger!.entries.append(LedgerEntry(datetime: formatter.string(from: dts),
+                                                                    salep: true, amountBTC: btcAmount, amountUSD: usdAmount, pricePoint: entry.price))
+                    btcAmount = 0.0
+                }
+                
+                //Buy USD
+                if entry.type == "BUY" && usdAmount >= 5.0 {
+                    btcAmount = usdAmount / entry.price
+                    self.preparedLedger!.entries.append(LedgerEntry(datetime: formatter.string(from: dts),
+                                                                    salep: false, amountBTC: btcAmount, amountUSD: usdAmount, pricePoint: entry.price))
+                    usdAmount = 0.0
+                }
+            }
+        }
     }
     
     private func loadSignals() {
@@ -92,15 +174,12 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
             guard let data = data else { return }
             do {
                 let decoder = JSONDecoder()
-                let ledgerResponse = try decoder.decode(SignalsResponse.self, from: data)
+                let signalsResponse = try decoder.decode(SignalsResponse.self, from: data)
                 
                 DispatchQueue.main.sync {
-      /*
-                    if let price = ledgerData.price {
-                        self.rate.text = price
-                    }
-        */
-                }
+                    self.signalsResponse = signalsResponse
+
+              }
             } catch _ {
                 let alert = UIAlertController(title: "Network Error", message: "Could not connect to trading service", preferredStyle: UIAlertControllerStyle.alert)
                 alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: {(alert: UIAlertAction!) in print("Network failure")}))

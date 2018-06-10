@@ -11,11 +11,12 @@ import Foundation
 struct LedgerEntry {
     let datetime: String
     let salep: Bool
-    let amount: Float
+    let amountBTC: Float
+    let amountUSD: Float
     let pricePoint: Float
 }
 
 struct Ledger {
-    let profitQuantifier: Float
-    let entries:[LedgerEntry]
+    var profitQuantifier: Float = 1.0
+    var entries:[LedgerEntry]
 }

@@ -7,13 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		440DD95E20CC1CC3004C748E /* Ledger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 440DD95D20CC1CC3004C748E /* Ledger.swift */; };
+		440DD96020CD9522004C748E /* UITextField+Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 440DD95F20CD9522004C748E /* UITextField+Buttons.swift */; };
+		440DD96220CDA025004C748E /* RoundedUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 440DD96120CDA025004C748E /* RoundedUIView.swift */; };
 		445514DD20C71895003735BE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445514DC20C71895003735BE /* AppDelegate.swift */; };
-		445514DF20C71895003735BE /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445514DE20C71895003735BE /* FirstViewController.swift */; };
-		445514E120C71895003735BE /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445514E020C71895003735BE /* SecondViewController.swift */; };
+		445514DF20C71895003735BE /* ScoopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445514DE20C71895003735BE /* ScoopViewController.swift */; };
+		445514E120C71895003735BE /* SimulationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445514E020C71895003735BE /* SimulationViewController.swift */; };
 		445514E420C71895003735BE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 445514E220C71895003735BE /* Main.storyboard */; };
 		445514E620C71896003735BE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 445514E520C71896003735BE /* Assets.xcassets */; };
 		445514E920C71896003735BE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 445514E720C71896003735BE /* LaunchScreen.storyboard */; };
 		445514F420C71897003735BE /* CoinTipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445514F320C71897003735BE /* CoinTipTests.swift */; };
+		4455150120C7365F003735BE /* TradesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4455150020C7365F003735BE /* TradesTableViewCell.swift */; };
+		4455150320C8651F003735BE /* SimulationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4455150220C8651F003735BE /* SimulationTableViewController.swift */; };
+		4455150520C9C339003735BE /* SimulationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4455150420C9C339003735BE /* SimulationData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,10 +33,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		440DD95D20CC1CC3004C748E /* Ledger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger.swift; sourceTree = "<group>"; };
+		440DD95F20CD9522004C748E /* UITextField+Buttons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField+Buttons.swift"; sourceTree = "<group>"; };
+		440DD96120CDA025004C748E /* RoundedUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedUIView.swift; sourceTree = "<group>"; };
 		445514D920C71895003735BE /* CoinTip.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoinTip.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		445514DC20C71895003735BE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		445514DE20C71895003735BE /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
-		445514E020C71895003735BE /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
+		445514DE20C71895003735BE /* ScoopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoopViewController.swift; sourceTree = "<group>"; };
+		445514E020C71895003735BE /* SimulationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulationViewController.swift; sourceTree = "<group>"; };
 		445514E320C71895003735BE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		445514E520C71896003735BE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		445514E820C71896003735BE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -38,6 +47,9 @@
 		445514EF20C71896003735BE /* CoinTipTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoinTipTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		445514F320C71897003735BE /* CoinTipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinTipTests.swift; sourceTree = "<group>"; };
 		445514F520C71897003735BE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4455150020C7365F003735BE /* TradesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradesTableViewCell.swift; sourceTree = "<group>"; };
+		4455150220C8651F003735BE /* SimulationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulationTableViewController.swift; sourceTree = "<group>"; };
+		4455150420C9C339003735BE /* SimulationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulationData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,10 +91,16 @@
 		445514DB20C71895003735BE /* CoinTip */ = {
 			isa = PBXGroup;
 			children = (
+				440DD95F20CD9522004C748E /* UITextField+Buttons.swift */,
+				440DD96120CDA025004C748E /* RoundedUIView.swift */,
+				4455150420C9C339003735BE /* SimulationData.swift */,
 				445514DC20C71895003735BE /* AppDelegate.swift */,
-				445514DE20C71895003735BE /* FirstViewController.swift */,
-				445514E020C71895003735BE /* SecondViewController.swift */,
+				445514DE20C71895003735BE /* ScoopViewController.swift */,
+				445514E020C71895003735BE /* SimulationViewController.swift */,
+				440DD95D20CC1CC3004C748E /* Ledger.swift */,
 				445514E220C71895003735BE /* Main.storyboard */,
+				4455150220C8651F003735BE /* SimulationTableViewController.swift */,
+				4455150020C7365F003735BE /* TradesTableViewCell.swift */,
 				445514E520C71896003735BE /* Assets.xcassets */,
 				445514E720C71896003735BE /* LaunchScreen.storyboard */,
 				445514EA20C71896003735BE /* Info.plist */,
@@ -200,9 +218,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				445514E120C71895003735BE /* SecondViewController.swift in Sources */,
+				4455150520C9C339003735BE /* SimulationData.swift in Sources */,
+				440DD96220CDA025004C748E /* RoundedUIView.swift in Sources */,
+				445514E120C71895003735BE /* SimulationViewController.swift in Sources */,
 				445514DD20C71895003735BE /* AppDelegate.swift in Sources */,
-				445514DF20C71895003735BE /* FirstViewController.swift in Sources */,
+				4455150120C7365F003735BE /* TradesTableViewCell.swift in Sources */,
+				440DD95E20CC1CC3004C748E /* Ledger.swift in Sources */,
+				440DD96020CD9522004C748E /* UITextField+Buttons.swift in Sources */,
+				445514DF20C71895003735BE /* ScoopViewController.swift in Sources */,
+				4455150320C8651F003735BE /* SimulationTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
