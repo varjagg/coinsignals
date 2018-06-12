@@ -14,7 +14,10 @@ class TradesTableViewCell: UITableViewCell {
     @IBOutlet weak var rate: UILabel!
     @IBOutlet weak var amountBTC: UILabel!
     @IBOutlet weak var amountUSD: UILabel!
-    @IBOutlet weak var transactionImage: UIImageView!
+ //   @IBOutlet weak var transactionImage: UIImageView!
+    @IBOutlet weak var transactionDirection: UILabel!
+    @IBOutlet weak var transactionText: UILabel!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()

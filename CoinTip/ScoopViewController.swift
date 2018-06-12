@@ -10,9 +10,12 @@ import UIKit
 import os.log
 
 struct ScoopData: Codable {
-    let price: Float?
+    let rate: Float
+    let price: Float
     let trend: String?
     let signal: String?
+    let detail: String
+    let dts: Int
 }
 
 class ScoopViewController: UIViewController {
@@ -22,8 +25,11 @@ class ScoopViewController: UIViewController {
     @IBOutlet weak var rate: UILabel!
     @IBOutlet weak var trend: UILabel!
     @IBOutlet weak var advice: UILabel!
+    @IBOutlet weak var detail: UILabel!
+    @IBOutlet weak var dateTime: UILabel!
     
     var scoopArray = [String] ()
+    let gradient = Gradient()
     
     lazy var refresh: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
@@ -35,6 +41,11 @@ class ScoopViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        //view.backgroundColor = UIColor.white
+        let backgroundLayer = gradient.gl
+        backgroundLayer?.frame = view.frame
+        view.layer.insertSublayer(backgroundLayer!, at: 0)
+        
         scrollView.refreshControl = refresh
     }
 
@@ -69,27 +80,47 @@ class ScoopViewController: UIViewController {
 
                 DispatchQueue.main.sync {
                     
-                    if let price = scoopData.price {
-                        self.rate.text = "Rate: \(price)"
+                    let rate = scoopData.rate
+                    let usdFormatter = NumberFormatter()
+                    usdFormatter.usesGroupingSeparator = true
+                    usdFormatter.numberStyle = .currency
+                    usdFormatter.locale = Locale(identifier: "en_US")
+                        
+                    guard let formattedRate = usdFormatter.string(from: NSNumber(value: rate)) else {
+                        fatalError("Could not format the rate")
                     }
+                        
+                    self.rate.text = "1.0 ₿ : " + formattedRate
                     
                     if let trend = scoopData.trend {
                         self.trend.text = trend
                     }
                     
+                    guard let formattedPrice = usdFormatter.string(from: NSNumber(value: scoopData.price)) else {
+                        fatalError("Could not format price")
+                    }
+                    
                     if let signal = scoopData.signal {
                         self.advice.text = signal
                         switch signal {
-                        case "SELL":
-                            self.view.backgroundColor = .red
-                        case "BUY":
-                            self.view.backgroundColor = .red
-                        case "NEARING":
-                            self.view.backgroundColor = .yellow
-                        default:
-                            self.view.backgroundColor = .blue
-                        }
+                        case "BUY", "SELL":
+                            self.detail.text = scoopData.detail + formattedPrice
+                            self.view.backgroundColor = UIColor(red: 170.0 / 255.0, green: 26.0 / 255.0, blue: 50.0 / 255.0, alpha: 1.0)
+                            self.gradient.setColors(from: UIColor(red: 170.0 / 255.0, green: 26.0 / 255.0, blue: 50.0 / 255.0, alpha: 1.0), to: UIColor(red: 255.0 / 255.0, green: 26.0 / 255.0, blue: 50.0 / 255.0, alpha: 1.0))
+                        case "NEAR":
+                            self.detail.text = scoopData.detail
+                            self.view.backgroundColor = UIColor(red: 255.0 / 255.0, green: 119.0 / 255.0, blue: 119.0 / 255.0, alpha: 1.0)
+                            self.gradient.setColors(from: UIColor(red: 255.0 / 255.0, green: 119.0 / 255.0, blue: 119.0 / 255.0, alpha: 1.0), to: UIColor(red: 255.0 / 255.0, green: 170.0 / 255.0, blue: 170.0 / 255.0, alpha: 1.0))
+                         default:
+                            self.detail.text = scoopData.detail
+                            self.view.backgroundColor = UIColor(red: 109.0 / 255.0, green: 219.0 / 255.0, blue: 133.0 / 255.0, alpha: 1.0)
+                            self.gradient.setColors(from: UIColor(red: 109.0 / 255.0, green: 219.0 / 255.0, blue: 133.0 / 255.0, alpha: 1.0), to: UIColor(red: 196.0 / 255.0, green: 255.0 / 255.0, blue: 209.0 / 255.0, alpha: 1.0))
+                         }
                     }
+                    
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "yy-MM-dd HH:mm"
+                    self.dateTime.text = formatter.string(from: Date.init(timeIntervalSince1970: TimeInterval(scoopData.dts)))
                 }
             } catch _ {
                 let alert = UIAlertController(title: "Network Error", message: "Could not connect to trading service", preferredStyle: UIAlertControllerStyle.alert)

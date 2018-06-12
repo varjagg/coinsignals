@@ -70,11 +70,32 @@ class SimulationTableViewController: UITableViewController {
         cell.amountUSD.text = usdFormatter.string(from: NSNumber(value: trade.amountUSD))
         cell.rate.text = String(trade.pricePoint)
         cell.backgroundColor = trade.salep ? .red : .blue
+        cell.transactionDirection.text = trade.salep ? "⇲" : "⇱"
+        cell.transactionText.text = trade.salep ? "Sell" : "Buy"
         //cell.transactionImage.image = UIImage(imageLiteralResourceName: trade.salep ? "saleArrow" : "buyArrow")
 
         return cell
     }
 
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Calculated profit of "
+    }
+    
+    /*
+     override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        
+        var headerView: SectionHeaderTableViewCell? = tableView.dequeueReusableCellWithIdentifier("SectionHeader")
+        if (headerView == nil) {
+            headerView = SectionHeaderTableViewCell(style:UITableViewCellStyle.Subtitle, reuseIdentifier:"SectionHeader")
+        }
+        headerView!.textLabel!.text = "Hello World"
+        
+        
+        return headerView;
+        
+    } */
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

@@ -18,6 +18,7 @@ struct SignalsData: Decodable {
     let dts: Int
     let type: String
     let price: Float
+    let rate: Float
 }
 
 class SimulationViewController: UIViewController, UITextFieldDelegate {
@@ -27,6 +28,7 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var startAmount: UITextField! {
         didSet { startAmount?.addDoneToolbar() }
     }
+    @IBOutlet weak var runButton: UIButton!
     
     var preparedLedger: Ledger?
     var signalsResponse: SignalsResponse?
@@ -48,6 +50,18 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         loadSignals()
         startAmount.delegate = self
+        
+        let btcFormatter = NumberFormatter()
+        btcFormatter.usesGroupingSeparator = true
+        btcFormatter.numberStyle = .decimal
+        btcFormatter.minimumFractionDigits = 3
+        btcFormatter.maximumFractionDigits = 8
+        
+        btcFormatter.string(from: NSNumber(value: 0.01))
+        
+        if startAmount.text == "" {
+            startAmount.text = "1"
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -92,11 +106,11 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
         switch string {
         case "0","1","2","3","4","5","6","7","8","9":
             return true
-        case ".":
+        case ".", ",":
             let array = textField.text?.map { String($0) }
             var decimalCount = 0
             for character in array! {
-                if character == "." {
+                if character == "." || character == "," {
                     decimalCount += 1
                 }
             }
@@ -144,6 +158,7 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
         guard let signalsResponse  = signalsResponse else {
             return
         }
+        
         for entry in signalsResponse.entries.reversed() {
             if entry.dts >= Int(startTime) && entry.dts <= Int(endTime) {
                 let dts = Date.init(timeIntervalSince1970: TimeInterval(entry.dts))
@@ -168,7 +183,7 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
     }
     
     private func loadSignals() {
-        guard let url = URL(string: "https://farca-pioneer.funcall.org/ledger.json") else { return }
+        guard let url = URL(string: "https://farca-pioneer.funcall.org/signals.json") else { return }
         
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             guard let data = data else { return }
@@ -178,13 +193,14 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
                 
                 DispatchQueue.main.sync {
                     self.signalsResponse = signalsResponse
+                    self.runButton.isEnabled = true
 
               }
             } catch _ {
                 let alert = UIAlertController(title: "Network Error", message: "Could not connect to trading service", preferredStyle: UIAlertControllerStyle.alert)
                 alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: {(alert: UIAlertAction!) in print("Network failure")}))
                 self.present(alert, animated: true, completion: nil)
-                
+                self.runButton.isEnabled = false
                 os_log("Could not parse ledger",  log: OSLog.default, type: .error)
             }
             }.resume()
