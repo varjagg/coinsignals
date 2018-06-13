@@ -41,7 +41,6 @@ class ScoopViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        //view.backgroundColor = UIColor.white
         let backgroundLayer = gradient.gl
         backgroundLayer?.frame = view.frame
         view.layer.insertSublayer(backgroundLayer!, at: 0)

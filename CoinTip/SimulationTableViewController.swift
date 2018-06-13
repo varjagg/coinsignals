@@ -11,6 +11,7 @@ import UIKit
 class SimulationTableViewController: UITableViewController {
 
     var ledger: Ledger?
+    var profit:Float = 1.0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,8 +69,9 @@ class SimulationTableViewController: UITableViewController {
         usdFormatter.locale = Locale(identifier: "en_US")
         
         cell.amountUSD.text = usdFormatter.string(from: NSNumber(value: trade.amountUSD))
+
         cell.rate.text = String(trade.pricePoint)
-        cell.backgroundColor = trade.salep ? .red : .blue
+        cell.backgroundColor = trade.salep ? UIColor(red: 255.0 / 255.0, green: 26.0 / 255.0, blue: 50.0 / 255.0, alpha: 1.0) : UIColor(red: 9.0 / 255.0, green: 148.0 / 255.0, blue: 229.0 / 255.0, alpha: 1.0)
         cell.transactionDirection.text = trade.salep ? "⇲" : "⇱"
         cell.transactionText.text = trade.salep ? "Sell" : "Buy"
         //cell.transactionImage.image = UIImage(imageLiteralResourceName: trade.salep ? "saleArrow" : "buyArrow")
@@ -77,24 +79,29 @@ class SimulationTableViewController: UITableViewController {
         return cell
     }
 
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Calculated profit of "
-    }
-    
-    /*
-     override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
-        
+        let textLabel = UILabel()
+ /*
         var headerView: SectionHeaderTableViewCell? = tableView.dequeueReusableCellWithIdentifier("SectionHeader")
         if (headerView == nil) {
             headerView = SectionHeaderTableViewCell(style:UITableViewCellStyle.Subtitle, reuseIdentifier:"SectionHeader")
         }
-        headerView!.textLabel!.text = "Hello World"
+        headerView!.textLabel!.text = ""
+ */
+        textLabel.textAlignment = .center
+        textLabel.adjustsFontSizeToFitWidth = true
+        textLabel.backgroundColor = .white
         
+        let pctFormatter = NumberFormatter()
+        pctFormatter.usesGroupingSeparator = true
+        pctFormatter.numberStyle = .percent
         
-        return headerView;
+        textLabel.text = "Final coin worth is at " + pctFormatter.string(from: NSNumber(value: profit))! + " of start value"
+
+        return textLabel;
         
-    } */
+    }
     
     /*
     // Override to support conditional editing of the table view.

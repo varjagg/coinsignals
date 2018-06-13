@@ -33,6 +33,11 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
     var preparedLedger: Ledger?
     var signalsResponse: SignalsResponse?
     
+    var loadTimestamp:Int = 0
+    var profit:Float = 1.0
+    
+    let btcFormatter = NumberFormatter()
+
     //MARK: actions
     @IBAction func runSimulation(_ sender: UIButton) {
         // Create the Activity Indicator
@@ -48,19 +53,27 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadSignals()
+
         startAmount.delegate = self
         
-        let btcFormatter = NumberFormatter()
-        btcFormatter.usesGroupingSeparator = true
+//        btcFormatter.usesGroupingSeparator = true
         btcFormatter.numberStyle = .decimal
         btcFormatter.minimumFractionDigits = 3
         btcFormatter.maximumFractionDigits = 8
+        //btcFormatter.currencySymbol = "₿"
+        btcFormatter.usesGroupingSeparator = false
         
-        btcFormatter.string(from: NSNumber(value: 0.01))
+        startAmount.text = btcFormatter.string(from: NSNumber(value: 0.1))
+        //startAmount.value = Decimal(floatLiteral: 0.1)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         
-        if startAmount.text == "" {
-            startAmount.text = "1"
+        let newTimestamp = Int(NSDate().timeIntervalSince1970)
+        
+        if  newTimestamp - loadTimestamp > 600 {
+            loadSignals()
+            loadTimestamp = newTimestamp
         }
     }
 
@@ -85,24 +98,52 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
             fatalError("Missing ledger data")
         }
         tradeController.ledger = preparedLedger
+        tradeController.profit = profit
         
     }
     
     //MARK: UITextField
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-
-        textField.resignFirstResponder()
-        return true
+        
+        let textValue = textField.text!
+        
+        switch textValue {
+        case "":
+            return false
+        default:
+            
+            guard let val = btcFormatter.number(from: textValue)?.doubleValue else {
+                fatalError("Could not parse the numeric value")
+            }
+            
+            if val <= 0.0 {
+                return false
+            }
+            textField.resignFirstResponder()
+            return true
+            
+        }
     }
+  
+    /*
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        textField.text = btcFormatter.string(from: NSNumber(value:Double(textField.text!.replacingOccurrences(of: "₿", with: ""))!))
+    }
+    */
     
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool { // return false to not change text
-        // max 2 fractional digits allowed
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        // return false to not change text
+        // max 8 fractional digits allowed
         let newText = (textField.text! as NSString).replacingCharacters(in: range, with: string)
         let regex = try! NSRegularExpression(pattern: "\\..{8,}", options: [])
         let matches = regex.matches(in: newText, options:[], range:NSMakeRange(0, newText.count))
         guard matches.count == 0 else { return false }
         
+       /* if newText.count == 1 && newText.first == "₿" {
+            return false
+        }
+        */
         switch string {
         case "0","1","2","3","4","5","6","7","8","9":
             return true
@@ -119,7 +160,7 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
             } else {
                 return true
             }
-        default:
+         default:
             let array = string.map { String($0) }
             if array.count == 0 {
                 return true
@@ -141,7 +182,7 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
             fatalError("No start amount specified.")
         }
         
-        guard let startAmount = Float(self.startAmount.text!) else {
+        guard let startAmount = btcFormatter.number(from: self.startAmount.text!)?.floatValue else {
             fatalError("Could not parse the amount")
         }
         
@@ -156,6 +197,14 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
         formatter.dateFormat = "yy-MM-dd HH:mm"
         
         guard let signalsResponse  = signalsResponse else {
+            return
+        }
+        
+        if signalsResponse.entries.count == 0 {
+            return
+        }
+        
+        guard let lastRate = signalsResponse.entries.first?.rate else {
             return
         }
         
@@ -180,6 +229,8 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
                 }
             }
         }
+        
+        profit = (btcAmount + (usdAmount / lastRate)) / startAmount
     }
     
     private func loadSignals() {
@@ -201,7 +252,7 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
                 alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: {(alert: UIAlertAction!) in print("Network failure")}))
                 self.present(alert, animated: true, completion: nil)
                 self.runButton.isEnabled = false
-                os_log("Could not parse ledger",  log: OSLog.default, type: .error)
+                os_log("Could not load signals",  log: OSLog.default, type: .error)
             }
             }.resume()
         
