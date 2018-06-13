@@ -74,7 +74,6 @@ class SimulationTableViewController: UITableViewController {
         cell.backgroundColor = trade.salep ? UIColor(red: 255.0 / 255.0, green: 26.0 / 255.0, blue: 50.0 / 255.0, alpha: 1.0) : UIColor(red: 9.0 / 255.0, green: 148.0 / 255.0, blue: 229.0 / 255.0, alpha: 1.0)
         cell.transactionDirection.text = trade.salep ? "⇲" : "⇱"
         cell.transactionText.text = trade.salep ? "Sell" : "Buy"
-        //cell.transactionImage.image = UIImage(imageLiteralResourceName: trade.salep ? "saleArrow" : "buyArrow")
 
         return cell
     }

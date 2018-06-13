@@ -208,13 +208,15 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
+        let tradingFee:Float = 0.0025
+        
         for entry in signalsResponse.entries.reversed() {
             if entry.dts >= Int(startTime) && entry.dts <= Int(endTime) {
                 let dts = Date.init(timeIntervalSince1970: TimeInterval(entry.dts))
                 
                 //Sell BTC
                 if entry.type == "SELL" && btcAmount >= 0.001 {
-                    usdAmount = usdAmount + btcAmount * entry.price
+                    usdAmount = usdAmount + (btcAmount - btcAmount * tradingFee) * entry.price
                     self.preparedLedger!.entries.append(LedgerEntry(datetime: formatter.string(from: dts),
                                                                     salep: true, amountBTC: btcAmount, amountUSD: usdAmount, pricePoint: entry.price))
                     btcAmount = 0.0
@@ -222,7 +224,7 @@ class SimulationViewController: UIViewController, UITextFieldDelegate {
                 
                 //Buy USD
                 if entry.type == "BUY" && usdAmount >= 5.0 {
-                    btcAmount = usdAmount / entry.price
+                    btcAmount = (usdAmount - usdAmount * tradingFee) / entry.price
                     self.preparedLedger!.entries.append(LedgerEntry(datetime: formatter.string(from: dts),
                                                                     salep: false, amountBTC: btcAmount, amountUSD: usdAmount, pricePoint: entry.price))
                     usdAmount = 0.0
